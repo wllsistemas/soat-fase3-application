@@ -1,3 +1,6 @@
+.idea
+backend/var
+
 # Local .terraform directories
 .terraform/
  **/.terraform/*

@@ -9,3 +9,14 @@ variable "aws_region" {
   type        = string
   default     = "us-east-2" 
 }
+
+variable "php_image_tag" {
+  description = "Tag da imagem PHP a ser implantada."
+  type        = string
+  default     = "v3"
+}
+
+variable "nginx_image_tag" {
+  description = "Tag da imagem Nginx a ser implantada."
+  default     = "v3"
+}
