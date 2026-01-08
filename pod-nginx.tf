@@ -18,7 +18,7 @@ resource "kubernetes_deployment_v1" "lab_soat_nginx" {
       spec {
         container {
           name  = "lab-soat-nginx"
-          image = "wllsistemas/nginx_lab_soat:fase2"
+          image = "wllsistemas/nginx_lab_soat:fase3"
           port {
             container_port = 80
           }
