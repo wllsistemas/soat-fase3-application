@@ -35,7 +35,7 @@ permissions:
 
 jobs:
   job1:
-    name: PostgreSQL
+    name: Application Nginx-PHP FPM
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
