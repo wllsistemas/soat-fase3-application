@@ -18,7 +18,7 @@ resource "kubernetes_deployment_v1" "lab_soat_php" {
       spec {
         container {
           name  = "lab-soat-php"
-          image = "wllsistemas/php_lab_soat:fase3-v1.0.0"
+          image = "wllsistemas/php_lab_soat:fase3-v2.0"
           port {
             container_port = 9000
           }

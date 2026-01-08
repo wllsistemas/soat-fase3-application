@@ -2,6 +2,7 @@
 
 use App\Http\ClienteApi;
 use Illuminate\Support\Facades\Route;
+use App\Http\Middleware\DocumentoObrigatorioMiddleware;
 
 Route::post('/cliente', [ClienteApi::class, 'create']);
 
