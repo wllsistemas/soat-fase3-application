@@ -1,34 +1,10 @@
 name: Application CI/CD
 
 on:
-  workflow_dispatch: # Allows manual triggering of the workflow
-    inputs:
-      apply:
-        description: "Executar o terraform apply?"
-        required: true
-        default: "false"
-        type: choice #Poderia ser do tipo boolean, mas escolhi choice para deixar mais amigável
-        options:
-          - true
-          - false
+  push:
+    branches:
+      - main
 
-      destroy:
-        description: "Destruir ambiente?"
-        required: true
-        default: "false"
-        type: choice
-        options:
-          - true
-          - false
-
-      plan_destroy:
-        description: "Planejar o destroy do ambiente?"
-        required: true
-        default: "false"
-        type: choice
-        options:
-          - true
-          - false
 permissions:
   id-token: write
   contents: read
@@ -47,7 +23,6 @@ jobs:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: us-east-2
-          # role-to-assume: arn:aws:iam::242512152633:role/github-infra-role
 
       - name: HashiCorp - Setup Terraform
         uses: hashicorp/setup-terraform@v3.1.2
@@ -63,12 +38,3 @@ jobs:
 
       - name: Terraform Apply
         run: terraform apply -auto-approve tfplan
-        if: github.event.inputs.apply == 'true'
-
-      - name: Plan Destroy
-        run: terraform plan -destroy -out=tfplandestroy
-        if: github.event.inputs.plan_destroy == 'true'
-
-      - name: Terraform Destroy
-        run: terraform apply -destroy -auto-approve tfplandestroy
-        if: github.event.inputs.destroy == 'true'
