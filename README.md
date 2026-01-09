@@ -36,7 +36,8 @@ Essa eficiência e flexibilidade explicam sua ampla adoção por [grandes empres
 
 O **PostgreSQL** é uma escolha de longo prazo segura, [preparada para o futuro](https://www.enterprisedb.com/blog/postgres-developers-favorite-database-2024?lang=en). O que o destaca é a [maneira como ele lida com tarefas básicas e complexas](https://www.nucamp.co/blog/coding-bootcamp-backend-with-python-2025-postgresql-vs-mysql-in-2025-choosing-the-best-database-for-your-backend) - desde armazenamento simples de dados até recursos avançados, como tratamento de dados geoespaciais e suporte nativo a JSON. Postgres [virou líder em 6 anos](https://survey.stackoverflow.co/2024/technology#1-databases), saindo de 33% para 49% de uso vs MySQL que caiu de 59% para ~40%. Nós o escolhemos por sua [escalabilidade, extensibilidade, licença e outros](https://www.bytebase.com/blog/postgres-vs-mysql/).
 
-# Documentação sobre infra
+# Documentação ADR, RFC, Arquitetura
+[Link da Documentação: ](doc/README.md)  
 
 ## 🚀 Pipeline GitHub Actions
 
