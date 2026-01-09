@@ -307,8 +307,7 @@ github.com/wllsistemas/
 **Recursos Provisionados:**
 
 - **Cluster:** `fiap-soat-eks-cluster` (EKS 1.28+, us-east-2)
-- **Worker Nodes:** 2x `t3.medium` (2 vCPU, 4 GB RAM)
-- **Namespace:** `lab-soat` (isolamento de recursos)
+- **Worker Nodes:** 2x `t3.small` 
 
 **Deployments:**
 
@@ -320,11 +319,11 @@ github.com/wllsistemas/
 
 **Services:**
 
-| Service | Type | Port | Endpoint |
-|---------|------|------|----------|
-| `lab-soat-nginx` | NodePort | 31000 | `http://localhost:31000/api/ping` |
-| `lab-soat-php` | ClusterIP | 9000 | Interno (PHP-FPM) |
-| `lab-soat-postgres` | ClusterIP | 5432 | `lab-soat-postgres.lab-soat.svc.cluster.local` |
+| Service | Type | Port | 
+|---------|------|------|
+| `lab-soat-nginx` | NodePort | 31000 | 
+| `lab-soat-php` | ClusterIP | 9000 | 
+| `lab-soat-postgres` | ClusterIP | 5432 |
 
 **Persistent Volumes:**
 
