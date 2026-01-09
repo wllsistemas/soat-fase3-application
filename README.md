@@ -28,8 +28,8 @@ _Tech Challenge - Pós Tech em Arquitetura de Software - FIAP Fase 3_
 
 ## 📦 Material de Apresentação
 
-- **[Vídeo de Apresentação](https://www.youtube.com/watch?v=POC_FaWt39E](https://youtu.be/V1vVXO1tRMg))** - Demonstração completa do sistema
-- **[Documento de Entrega - PDF]([https://drive.google.com/file/d/1Xl_8YgZHRIELfM3yCWjbswp4tD7Gxoin/view?usp=drive_link](https://drive.google.com/file/d/1zYUQeFIhgjaYiCnvH5A9drwDD8-x_zzp/view?usp=sharing))** - Documentação oficial do projeto
+- **[Vídeo de Apresentação](https://www.youtube.com/watch?v=V1vVXO1tRMg)** - Demonstração completa do sistema
+- **[Documento de Entrega - PDF](https://drive.google.com/file/d/1Xl_8YgZHRIELfM3yCWjbswp4tD7Gxoin/view?usp=drive_link](https://drive.google.com/file/d/1zYUQeFIhgjaYiCnvH5A9drwDD8-x_zzp/view?usp=sharing))** - Documentação oficial do projeto
 
 ---
 
