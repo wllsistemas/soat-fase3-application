@@ -16,24 +16,6 @@ _Tech Challenge - Pós Tech em Arquitetura de Software - FIAP Fase 3_
 
 ---
 
-## 📋 Índice
-
-- [Equipe](#-equipe)
-- [Material de Apresentação](#-material-de-apresentação)
-- [Visão Geral](#-visão-geral)
-- [Arquitetura de Software](#️-arquitetura-de-software)
-  - [Clean Architecture](#clean-architecture)
-  - [Diagramas C4](#diagramas-c4)
-  - [Padrões de Design](#padrões-de-design)
-- [Decisões Arquiteturais](#-decisões-arquiteturais)
-- [Infraestrutura](#-infraestrutura)
-- [Modelo de Dados](#-modelo-de-dados)
-- [Monitoramento e Observabilidade](#-monitoramento-e-observabilidade)
-- [Guias Técnicos](#-guias-técnicos)
-- [Documentação Completa](#-documentação-completa)
-
----
-
 ## 👥 Equipe
 
 | Nome | RM | Discord | LinkedIn |
@@ -87,8 +69,8 @@ Oficinas mecânicas frequentemente enfrentam desafios na gestão de ordens de se
 
 **Observabilidade:**
 - **Plataforma:** Datadog (APM, logs, métricas)
-- **Dashboards:** 3 dashboards de negócio
-- **Alertas:** 3 monitors com notificações
+- **Dashboards:** dashboards de negócio
+- **Alertas:** monitors com notificações
 
 ---
 
@@ -286,7 +268,7 @@ Infraestrutura segregada em **4 repositórios Git** independentes:
 
 ```
 github.com/wllsistemas/
-├── soat-fase3-application/     # Aplicação Laravel + K8s manifests
+├── soat-fase3-application/     # Aplicação Laravel + Scripts Terraform
 ├── soat-fase3-infra/           # EKS cluster, IAM roles, Datadog, HPA
 ├── soat-fase3-database/        # PostgreSQL deployment, PVC, secrets
 └── soat-fase3-lambda/          # Autenticação serverless (Node.js)
@@ -333,78 +315,17 @@ github.com/wllsistemas/
 
 ---
 
-### Terraform (IaC)
+### CI/CD (GitHub Actions) Application
 
-**Backend Terraform:**
-```hcl
-backend "s3" {
-  bucket = "s3-fiap-soat-fase3"
-  key    = "terraform.tfstate"
-  region = "us-east-2"
-}
-```
+#### 1. Aprovação de um PR para merge com a `main`
+No branch `main` são efetuados merges mediante aprovação dos PRs.
 
-**Recursos Principais:**
-
-- **EKS Cluster** (`eks.tf`): Control plane, node groups, VPC config
-- **EBS CSI Driver** (`eks-ebs-csi.tf`): Persistent volumes
-- **IAM Roles** (`roles.tf`): EKS cluster, node group, EBS CSI
-- **Metrics Server** (`metrics-server.tf`): HPA metrics source
-- **Datadog** (`datadog.tf`): DaemonSet, RBAC, secrets
-
-**Comandos:**
-
-```bash
-# Inicializar
-terraform init
-
-# Aplicar infra
-terraform apply -auto-approve
-
-# Destruir
-terraform destroy -auto-approve
-```
-
----
-
-### CI/CD (GitHub Actions)
-
-**Pipeline CI (Application):**
-
-```yaml
-Trigger: Push to main
-Steps:
-  1. Run PHPUnit tests
-  2. Build Docker image (wllsistemas/php_lab_soat:fase3)
-  3. Push to Docker Hub
-  4. Send email notification
-```
-
-**Pipeline CD (Application):**
-
-```yaml
-Trigger: CI success
-Steps:
-  1. Validate CI completed
-  2. Copy K8s manifests to VPS
-  3. Deploy to Kubernetes (kubectl apply)
-  4. Send email notification
-```
-
-**Pipeline Terraform (Infra/Database):**
-
-```yaml
-Trigger: Manual (workflow_dispatch)
-Options:
-  - apply: Provisionar recursos
-  - destroy: Destruir recursos
-  - plan_destroy: Preview de destruição
-Steps:
-  1. Configure AWS credentials (OIDC)
-  2. Terraform init
-  3. Terraform validate
-  4. Terraform apply/destroy
-```
+#### 2. Execução da Pipeline CI
+Ao executar o merge, é disparada a pipeline `database.yaml` que executa:
+- Provisionamento do Persistent Volume Claim PVC
+- Provisionamento do POD com imagem PostgresQL
+- Provisionamento do Serviço ClusterIP
+- Persiste o estado do terraform no bucket S3
 
 ---
 
@@ -493,209 +414,17 @@ CLIENTES (1) ───────> (N) VEICULOS
 **Componentes:**
 
 - **APM (Application Performance Monitoring):** Traces distribuídos, latência de endpoints, SQL queries
-- **Logs:** Centralizados (JSON), correlação via `dd.trace_id`
+- **Logs:** Centralizados `dd.trace_id`
 - **Métricas:** Sistema, Kubernetes, negócio (DogStatsD)
-- **Dashboards:** 3 dashboards de negócio
-- **Monitors:** 3 alertas automáticos
-
----
-
-### Dashboards
-
-#### 1. **Volume de Ordens**
-Monitora throughput e volume de requisições:
-
-- Ordens criadas por hora
-- Ordens aprovadas vs reprovadas (24h)
-- Top 5 clientes por volume
-- Valor total de ordens (R$)
-- Status de ordens (heat map)
-
-#### 2. **Performance da Aplicação**
-Monitora APM, latência e recursos:
-
-- Latência P50/P95/P99 por endpoint
-- Throughput (req/s)
-- Taxa de erro (%)
-- CPU/Memória dos pods (time series)
-- HPA - Réplicas (desired vs current)
-- Queries PostgreSQL lentas (>1s)
-
-#### 3. **Erros e Logs**
-Monitora erros e exceções:
-
-- Taxa de erro HTTP (5xx)
-- Total de erros (24h)
-- Top erros por endpoint
-- Logs ERROR/CRITICAL (stream)
-- Exceptions mais frequentes (tabela)
-
----
-
-### Monitors (Alertas)
-
-| Monitor | Condição | Warning | Critical | Notificação |
-|---------|----------|---------|----------|-------------|
-| **Latência Alta** | P95 > 500ms por 5 min | 300ms | 500ms | Email |
-| **Taxa de Erro Alta** | Erro >5% por 5 min | 3% | 5% | Email |
-| **Container Parado** | Pod não-ready por 2 min | - | 0 pods | Email + Priority P1 |
-
----
-
-### Logs de Negócio (BusinessEventLogger)
-
-Trait customizado para logging estruturado de eventos de negócio:
-
-**Eventos Implementados:**
-- `ordem.criada` - Ordem criada
-- `ordem.status.atualizado` - Status alterado
-- `ordem.servico.adicionado` - Serviço adicionado
-- `ordem.material.adicionado` - Material adicionado
-- `ordem.aprovada` - Aprovação pelo cliente
-- `ordem.reprovada` - Reprovação (warning level)
-
-**Exemplo de Log:**
-```json
-{
-  "event_type": "ordem.criada",
-  "timestamp": "2025-01-08T14:30:00Z",
-  "correlation_id": "7f8c9d2e-4b3a-1c2d-8e9f-0a1b2c3d4e5f",
-  "dd.trace_id": "123456789",
-  "dd.span_id": "987654321",
-  "data": {
-    "ordem_uuid": "abc-123",
-    "cliente_uuid": "def-456",
-    "valor_total": 150.00
-  }
-}
-```
-
-**Queries Úteis:**
-```
-# Histórico de uma ordem
-service:oficina-soat ordem.uuid:abc-123
-
-# Eventos de uma trace
-service:oficina-soat dd.trace_id:123456789
-
-# Ordens reprovadas
-service:oficina-soat event.name:ordem.reprovada status:warning
-```
-
-📄 **Documentação completa:** [`docs/monitoring/datadog-observability.md`](./docs/monitoring/datadog-observability.md)
-
----
+- **Dashboards:** dashboards de negócio
+- **Monitors:** alertas automáticos
 
 ## 🚀 Guias Técnicos
-
-### Setup Local (Docker Compose)
-
-**Pré-requisitos:**
-- Docker >= 28.4.0
-- Docker Compose >= 2.0
-
-**Portas Utilizadas:**
-- `8080` - Nginx (API)
-- `5432` - PostgreSQL
-
-**Execução:**
-
-```bash
-# Clone o repositório
-git clone git@github.com:felipeoli7eira/oficina-soat.git
-cd oficina-soat
-
-# Suba os containers
-docker compose up -d --build
-
-# Verificar saúde
-curl http://localhost:8080/api/ping
-# Resposta esperada: {"msg":"pong","err":false}
-```
-
-**Testes:**
-
-```bash
-# Executar todos os testes
-docker compose exec php php artisan test
-
-# Com cobertura
-docker compose exec php php artisan test --coverage
-
-# Relatório HTML: backend/var/coverage/index.html
-```
-
----
-
-### Setup Kubernetes
-
-**Pré-requisitos:**
-- kubectl >= 1.32.2
-- Cluster Kubernetes (Minikube, Kind, EKS)
-
-**Deploy:**
-
-```bash
-# Aplicar todos os manifestos (ordem importa!)
-kubectl apply -f k8s/
-
-# Verificar pods
-kubectl get pods -n lab-soat
-
-# Verificar serviços
-kubectl get services -n lab-soat
-
-# Health check
-curl http://localhost:31000/api/ping
-```
-
-**Deletar:**
-
-```bash
-kubectl delete namespace lab-soat
-```
-
----
-
-### Setup Terraform
-
-**Pré-requisitos:**
-- Terraform >= 1.13.3
-- AWS CLI configurado
-- Credenciais AWS (OIDC ou access keys)
-
-**Provisionar EKS Cluster:**
-
-```bash
-# Repositório: soat-fase3-infra
-cd soat-fase3-infra
-
-terraform init
-terraform plan
-terraform apply -auto-approve
-```
-
-**Provisionar PostgreSQL:**
-
-```bash
-# Repositório: soat-fase3-database
-cd soat-fase3-database
-
-terraform init
-terraform apply -auto-approve -var="postgres_password=senha_segura"
-```
-
-**Destruir:**
-
-```bash
-terraform destroy -auto-approve
-```
-
 ---
 
 ### API Documentation (Postman)
 
-**Workspace:** [https://app.getpostman.com/join-team?invite_code=a8f7c5db50618a4d057b1e50ca129cef16d68fbd74f03c9d4f532c18e9fff4c3](https://app.getpostman.com/join-team?invite_code=a8f7c5db50618a4d057b1e50ca129cef16d68fbd74f03c9d4f532c18e9fff4c3)
+**Workspace:** [https://www.postman.com/foliveirateam/oficina-soat](https://www.postman.com/foliveirateam/oficina-soat)
 
 **Usuário Padrão (Seeder):**
 - Email: `soat@example.com`
