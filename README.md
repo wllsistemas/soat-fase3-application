@@ -19,7 +19,7 @@ _Tech challenge_ da pós tech em arquitetura de software - FIAP Fase 3
 
 # Material
 - [Vídeo de apresentação](https://www.youtube.com/watch?v=POC_FaWt39E)
-- [Documento de entrega - PDF](https://drive.google.com/file/d/1Xl_8YgZHRIELfM3yCWjbswp4tD7Gxoin/view?usp=drive_link)
+- [Documento de entrega - PDF](https://drive.google.com/file/d/1zYUQeFIhgjaYiCnvH5A9drwDD8-x_zzp/view?usp=sharing)
 
 # Sobre o projeto
 Este projeto foi desenvolvido com [Laravel](https://laravel.com), [nginx](https://nginx.org) e [postgresql](https://www.postgresql.org) e por volta dessas 3 tecnologias, está o [docker](https://www.docker.com)/[docker compose](https://docs.docker.com/compose) e toda uma arquitetura com kubernetes que entraremos em mais detalhes em seções posteriores.
@@ -81,7 +81,7 @@ Para persistência do estado dos recursos provisionados via terraform, é utiliz
 
 # API Documentation
 
-O [postman](https://www.postman.com) foi usado para criar a documentação da API. O workspace com a collection está [disponível aqui](https://app.getpostman.com/join-team?invite_code=a8f7c5db50618a4d057b1e50ca129cef16d68fbd74f03c9d4f532c18e9fff4c3&target_code=0249e09988430bb18a9413c8067664c2). Você notará que cada recurso está organizado em pastas:
+O [postman](https://www.postman.com) foi usado para criar a documentação da API. O workspace com a collection está [disponível aqui](https://www.postman.com/foliveirateam/workspace/oficina-soat). Você notará que cada recurso está organizado em pastas:
 
 - pasta `usuario`: CRUD de usuários do sistema (mecânicos, atendentes, etc...)
 - pasta `servico`: CRUD de serviços da oficina, como troca de óleo, revisões e etc...
